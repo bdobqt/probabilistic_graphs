@@ -1,8 +1,8 @@
 import networkx as nx
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import anytree as at
-from anytree import RenderTree
+#import matplotlib as mpl
+#import matplotlib.pyplot as plt
+#import anytree as at
+#from anytree import RenderTree
 import random
 
 
@@ -20,7 +20,7 @@ class Node(object):
         self.children.append(obj)
 
 
-
+#GraphCreation
 def probabilities_graph_uniform():
     G = nx.dense_gnm_random_graph(10, 14 , seed=333)
     #G = nx.connected_caveman_graph(100, 50)
@@ -32,8 +32,8 @@ def probabilities_graph_uniform():
         G.edges[edge]['probability'] = probability
     return G
 
-#We are calculating the probability of a subgraph.
 
+#We are calculating the probability of a subgraph.
 def graph_probability(graph,subgraph):
     Pv = 1
     Pe = 1
@@ -52,7 +52,6 @@ def graph_probability(graph,subgraph):
     return Pv * Pe
 
 #Calculating the clique probability using lemma2
-
 def clique_prob_lemma2(graph):
     Pe = 1
     Pv = 1
@@ -69,6 +68,9 @@ def getFistNode(g):
     for node in g.nodes(data=True):
         return node
 
+#def max_clique_prob_lemma33(graph):
+
+
 def max_clique_prob_lemma3(graph):
     C = nx.Graph()
     a =getFistNode(graph)
@@ -84,35 +86,6 @@ def max_clique_prob_lemma3(graph):
         maxProb = maxProb * (1 - (PrCi/PrC))
     return maxProb
 
-def test1(G,k,s):
-    #creating our tree root with data = "root"
-    root = at.Node("root")
-    #Cliques return a list of nodes so we have to linearly dig into the graph and fetch each node and edge zZzZZ...
-    for clique in nx.find_cliques(G):
-        w = 0
-        for i in range(0, len(clique)):#reseting and moving down to next lvl
-
-            w = w + 1
-            for j in range(0,len(clique)-w):# from the first element create all k level combinations using k sets. n-k iterations. j defines i in (i,j).
-                for l in range(j+1,len(clique)):#in (i,j) clique this iteration helps with j.
-                     x= 3
-#                    print()
-                    #print("Level : %d  -  clique ( %d, %d )" % (k,j,l))
-
-
-
-            #len(clique) - i
-            #print(len(clique))
-            #αdd list[i] of the children root and then act as sets
-            #for j in range():
-
-            #for j in range
-
-         #   at.Node(node,parent=root)
-        #print(clique)
-        #print(clique[0])
-    for pre, fill, node in RenderTree(root):
-        print("%s%s" % (pre, node.name))
 
 
 
@@ -150,13 +123,20 @@ def uncertain_graph_generator():
     G = nx.connected_caveman_graph(55,15)
     print(list(G.nodes))
     nx.draw_networkx(G)
-    plt.show()
+    #plt.show()
 
 #uncertain_graph_generator()
-test1(probabilities_graph_uniform(),1,1)
+#test1(probabilities_graph_uniform(),1,1)
 #test1(probabilities_graph_uniform(),4,4)
 
+def printone():
+    print("hey1")
 
+
+
+
+
+#mct()
 '''
 
 G = nx.Graph()
