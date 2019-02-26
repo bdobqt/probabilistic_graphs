@@ -1,4 +1,4 @@
-import testingstuff as ts
+#import testingstuff as ts
 import networkx as nx
 from anytree import Node, RenderTree, findall_by_attr, find
 import heapq
@@ -83,7 +83,7 @@ class Bnb:
         S = dict()  # S is a dict [ δ(Ci,C): listofnodes]that will be sorted later
         for child in node.children:  # Each children of nodepop has one neighbour.
             child_Graph = self.PG.converts_clique_to_subgraph(child.name)
-            PrCi = ts.clique_prob_lemma2(child_Graph)
+            PrCi = self.PG.clique_prob_lemma2(child_Graph)
             di = PrCi / prc
             # prc =  prc * di
             d = d * (1 - di)
@@ -124,7 +124,7 @@ class Bnb:
         return False
 
     def updatetopk(self, C):
-        prctemp = ts.clique_prob_lemma2(self.PG.converts_clique_to_subgraph(C))
+        #prctemp = ts.clique_prob_lemma2(self.PG.converts_clique_to_subgraph(C))
         if len(C) < self.s:
             return
         if len(self.Htopk) == self.k and self.prmc > self.t:
@@ -204,9 +204,9 @@ class Bnb:
                         lines = line.rstrip('\n')
                         lines = lines.split()
                         alllines.append(lines)
-                    G = ts.convertListToGraph(alllines)
+                    #G = ts.convertListToGraph(alllines)
                     f.close()
-                ts.writeGtoFile(G,file)
+                #ts.writeGtoFile(G,file)
                 alllines = []
 
     def showmenuandload(self):
