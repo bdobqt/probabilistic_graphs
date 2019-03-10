@@ -8,7 +8,7 @@ class ProbabilityGraph:
     #Constructor for random dense graph(v,e) G.
     def __init__(self, graph = None):
         if graph == None:
-            self.G = nx.dense_gnm_random_graph(100, 140)
+            self.G = nx.dense_gnm_random_graph(5000, 7000)
         else:
             self.G = graph
         a = 0

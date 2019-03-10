@@ -4,7 +4,6 @@ import networkx as nx
 
 class St:
     a = 0
-
     #Create an St from a PGraph. Root is stored in search_troot.
     def __init__(self, graph):
         self.search_troot = Node("root", parent=None)
