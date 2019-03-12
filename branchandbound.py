@@ -17,15 +17,16 @@ class Bnb:
     # Root is a Node.
     #1,2
 
-    def __init__(self, k, s):
-
+    def __init__(self, k, s, graph = None):
+        if graph == None:
+            self.PG = PGraph.ProbabilityGraph(self.create_test_g(), None, None)
+        else:
+            self.PG = graph
         self.Hext = []
         self.Htopk = []
         heapq._heapify_max(self.Hext)
         heapq.heapify(self.Htopk)
-        #self.PG = PGraph.ProbabilityGraph()
         #self.checkingCl(s)
-        self.PG = PGraph.ProbabilityGraph(self.create_test_g())
         self.St = SearchTree.St(self.PG.G)
         self.k = k
         self.s = s
@@ -160,6 +161,9 @@ class Bnb:
             return False
 
     def print_results(self):
+        for cliques in nx.find_cliques(self.PG.G):
+            if len(cliques) == self.s :
+                print(cliques)
         print('Hext : \n')
         print(self.Hext)
         print('\nHtopk : \n')
@@ -174,16 +178,3 @@ class Bnb:
             if len(clique) == s :
                 print(clique)
 
-
-
-#'''
-bnb1 = Bnb(4, 4)
-#bnb1.importfiles()
-#bnb1.showmenuandload()
-#bnb1.test1()
-bnb1.branch_and_bound()
-bnb1.debugme()
-
-#bnb1.print_results()
-
-#'''

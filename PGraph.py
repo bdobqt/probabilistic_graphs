@@ -5,12 +5,13 @@ class ProbabilityGraph:
 
     #G = nx.Graph()
 
-    #Constructor for random dense graph(v,e) G.
-    def __init__(self, graph = None):
+    #Constructor for random dense graph(v,e) G or recieves a set graph
+    def __init__(self,graph = None, v = None, e = None):
         if graph == None:
-            self.G = nx.dense_gnm_random_graph(5000, 7000)
+            self.G = nx.dense_gnm_random_graph(v, e)
         else:
             self.G = graph
+        #Filling Vertices and Edges with probabilities.
         a = 0
         for node in list(self.G.nodes):
             random.seed(a)
@@ -41,3 +42,4 @@ class ProbabilityGraph:
         for edge in graph.edges(data = True):
             Pe = Pe * edge[2]['probability']
         return Pv * Pe
+
