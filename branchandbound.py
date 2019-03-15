@@ -5,7 +5,7 @@ import operator
 import copy
 import PGraph
 import SearchTree
-
+import time
 
 
 class Bnb:
@@ -17,11 +17,11 @@ class Bnb:
     # Root is a Node.
     #1,2
 
-    def __init__(self, k, s, graph = None):
-        if graph == None:
+    def __init__(self, k, s, graphclassobject = None):
+        if graphclassobject == None:
             self.PG = PGraph.ProbabilityGraph(self.create_test_g(), None, None)
         else:
-            self.PG = graph
+            self.PG = graphclassobject
         self.Hext = []
         self.Htopk = []
         heapq._heapify_max(self.Hext)
@@ -51,6 +51,7 @@ class Bnb:
         return  G
 
     def branch_and_bound(self):
+        start = time.time()
         # For each vertex, we have already all the neighbours connected to to our Search Tree.
         root = self.St.search_troot
         while root.height is not 0:
@@ -68,6 +69,8 @@ class Bnb:
             if pruned is False:
                 self.updatetopk(node.name)
         self.print_results()
+        end = time.time()
+        print("Elapsed time %g seconds" %(end-start))
 
     def generate_children(self, node):
         node_Graph = self.PG.converts_clique_to_subgraph(node.name)
