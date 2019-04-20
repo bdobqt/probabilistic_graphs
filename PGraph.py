@@ -1,47 +1,47 @@
 import networkx as nx
 import random
+import time
+from multiprocessing import Pool
+from threading import Thread
 
 class ProbabilityGraph:
 
     #Constructor for random dense graph(v,e) G or recieves a set graph
     def __init__(self, graph = None, v = None, e = None):
         self.G = nx.Graph()
+        f = open("results.txt", "a")
         if graph == None:
+            start = time.time()
             self.G = nx.dense_gnm_random_graph(v, e)
+            end = time.time()
+            start2 = time.time()
             self.createGraph()
+            end2 =time.time()
+            print('Bhke')
+            f.write("Creating Dense G first Elapsed time %g seconds\n" % (end - start))
+            f.write("Creating The probaility tree Elapsed time %g seconds\n" % (end2 - start2))
+            f.close()
+            #print(list(nx.enumerate_all_cliques(self.G)))
         else:
             #Which mean i got an input graph which is a list with N tuples.(NodeA, NodeB, Probability).
             self.createGraphfromList(graph)
 
     def createGraphfromList(self, list):
         #nodeA = line[0], nodeB = line[1], probability = line[2]
-        a = 0
+        #a = 0
         for line in list:
-            random.seed(a)
+            #random.seed(a)
             probability = random.uniform(0, 1)
             self.G.add_node(line[0], probability=probability)
-            a = a + 1
-            random.seed(a)
+            #a = a + 1
+            #random.seed(a)
             probability = random.uniform(0, 1)
             self.G.add_node(line[1], probability=probability)
             probability = float(line[2])
             self.G.add_edge(line[0], line[1], probability=probability)
-            a = a + 1
+        #print('Done')
+            #a = a + 1
 
-    def createGraph(self):
-        # Filling Vertices and Edges with probabilities.
-        a = 0
-        for node in list(self.G.nodes):
-            random.seed(a)
-            probability = random.uniform(0, 1)
-            self.G.nodes[node]['probability'] = probability
-            a = a + 1
-        a = 0
-        for edge in list(self.G.edges):
-            random.seed(a)
-            probability = random.uniform(0, 1)
-            self.G.edges[edge]['probability'] = probability
-            a = a + 1
 
     # Converts a treenode from the search tree(clique) to a graph item.
     # Our clique is a list of vertices.
@@ -62,5 +62,22 @@ class ProbabilityGraph:
             Pe = Pe * edge[2]['probability']
         return Pv * Pe
 
+    def createGraph(self):
+        # Filling Vertices and Edges with probabilities.
+       # start = time.time()
+        for node in list(self.G.nodes):
+            self.createPrNode(node)
+        for edge in list(self.G.edges):
+            self.createPrEdge(edge)
+        #end = time.time()
+       # duration = end - start
+        #print('Creating graph took ', duration)
 
+    def createPrNode(self, node):
+        probability = random.uniform(0, 1)
+        self.G.nodes[node]['probability'] = probability
+
+    def createPrEdge(self, edge):
+        probability = random.uniform(0, 1)
+        self.G.edges[edge]['probability'] = probability
 

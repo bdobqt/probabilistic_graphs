@@ -18,11 +18,12 @@ def test1(input):
             txtfile = open(file,"r")
             for line in txtfile:
                 line = line.rstrip('\n')
-                templine = line.split("\t")
+                templine = line.split()
+                #print(templine)
                 alllines.append(templine)
             txtfile.close()
             PG = PGraph.ProbabilityGraph(alllines, None, None)
-            writePGtoFile(temp, PG)
+            #writePGtoFile(temp, PG)
             return PG
             #save to G kai close arxeia kai trexe bnb
 
