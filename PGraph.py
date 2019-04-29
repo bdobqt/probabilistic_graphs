@@ -3,6 +3,7 @@ import random
 import time
 from multiprocessing import Pool
 from threading import Thread
+from anytree import Node
 
 class ProbabilityGraph:
 
@@ -12,12 +13,12 @@ class ProbabilityGraph:
         f = open("results.txt", "a")
         if graph == None:
             start = time.time()
-            self.G = nx.dense_gnm_random_graph(v, e)
+            self.G = nx.dense_gnm_random_graph(v, e, seed = 444)
             end = time.time()
             start2 = time.time()
             self.createGraph()
             end2 =time.time()
-            print('Bhke')
+            #print('Bhke')
             f.write("Creating Dense G first Elapsed time %g seconds\n" % (end - start))
             f.write("Creating The probaility tree Elapsed time %g seconds\n" % (end2 - start2))
             f.close()
@@ -25,6 +26,10 @@ class ProbabilityGraph:
         else:
             #Which mean i got an input graph which is a list with N tuples.(NodeA, NodeB, Probability).
             self.createGraphfromList(graph)
+        self.setOfAllCliques = set(tuple(x) for x in list(nx.enumerate_all_cliques(self.G)))
+        #print(self.setOfAllCliques)
+        #Remove from set everytime i access the setOfAllCliques!
+
 
     def createGraphfromList(self, list):
         #nodeA = line[0], nodeB = line[1], probability = line[2]
@@ -49,6 +54,16 @@ class ProbabilityGraph:
     def converts_clique_to_subgraph(self, clique):
         subg = self.G.subgraph(clique)
         return subg
+
+    def add_children(self, node):
+        children = [x for x in self.setOfAllCliques if self.tuple_Condition(node.name, x)]
+        for element in children:
+            self.setOfAllCliques.remove(element)
+
+        #print("Children : '{0}'".format(children))
+        for child in children:
+            Node(child, parent=node)
+
 
     def clique_prob_lemma2(self,graph):
         Pe = 1.0
@@ -81,3 +96,97 @@ class ProbabilityGraph:
         probability = random.uniform(0, 1)
         self.G.edges[edge]['probability'] = probability
 
+    def tuple_Condition(self, tupleA, tupleB):
+        #print("Tuple A : '{0}' Tuple B : '{1}'".format(tupleA,tupleB))
+        #tupleA = tuple([tupleA])
+        #print("Tuple A : '{0}' Tuple B : '{1}'".format(tupleA,tupleB))
+        #print("Tuple A :'{0}' and Tuple B : '{1}'".format(tupleA,tupleB))
+        if len(tupleA) + 1 != len(tupleB):
+            #print("Len A :'{0}' and Len B : '{1}'".format(len(tupleA), len(tupleB)))
+            return False
+        else:
+            for element in tupleA:
+                if element not in tupleB:
+                    return False
+           # print("True child   '{0}'".format(element))
+            return True
+
+'''
+def tuple_Condition(tupleA, tupleB):
+    if len(tupleA) + 1 != len(tupleB):
+        return False
+    else:
+        for i in range(0, len(tupleA)):
+            if tupleA[i] not in tupleB:
+                return False
+        return True
+
+
+
+a = (4,3)
+seta = {(4,), (4, 2),(4, 3, 5), (4, 3, 7), (4, 2, 6), (6,)}
+matches = [x for x in seta if tuple_Condition(a , x)]
+for lol in matches:
+    print(lol)
+
+'''
+
+'''
+name = 'krogane_prob.txt'
+#name = 'gavin_prob.txt'
+alllines = []
+txtfile = open(name,"r")
+for line in txtfile:
+    line = line.rstrip('\n')
+    templine = line.split()
+    alllines.append(templine)
+txtfile.close()
+PG = ProbabilityGraph(alllines, None, None)
+start = time.time()
+listCl = list(nx.enumerate_all_cliques(PG.G))
+
+a = list()
+for child in listCl:
+    if '2' in child:
+        print(child)
+        a.append(child)
+end = time.time()
+print(a)
+print('Searching took %s' % (end - start))
+
+start2 = time.time()
+#a = [x for x in listCl if '2' in x]
+set1 = set(tuple(x) for x in listCl)
+end2 = time.time()
+print(set1)
+#print(a)
+print('Searching 2 took %s' % (end2 - start2))
+
+'''
+
+
+'''
+v= 4000
+e =4000
+G = nx.Graph()
+G = nx.dense_gnm_random_graph(v, e)
+matches2 = list()
+st = time.time()
+matches = [x for x in list(nx.enumerate_all_cliques(G)) if 1 in x]
+end = time.time()
+print(' Matches took %s' %(end - st))
+print(matches)
+st2 = time.time()
+for x in list(nx.enumerate_all_cliques(G)):
+    if 1 in x:
+        matches2.append(x)
+end2 = time.time()
+print(' Matches 2 took %s' %(end2 - st2))
+print(matches2)'''
+
+'''
+a ={(2,), (4, 2)}
+a.remove((2,))
+print(a)
+
+'''

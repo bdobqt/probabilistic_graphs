@@ -11,7 +11,6 @@ def test1(input):
         temppickle = temp + str('.pickle')
         if(os.path.isfile(temppickle)):
             PG = loadPGfromFile(temppickle)
-            #print('ye')
             return PG
         else:
             alllines = []
@@ -19,7 +18,6 @@ def test1(input):
             for line in txtfile:
                 line = line.rstrip('\n')
                 templine = line.split()
-                #print(templine)
                 alllines.append(templine)
             txtfile.close()
             PG = PGraph.ProbabilityGraph(alllines, None, None)
