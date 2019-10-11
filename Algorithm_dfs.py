@@ -29,9 +29,8 @@ class Algorithm:
         heapq._heapify_max(self.Hext)
         heapq.heapify(self.Htopk)
         self.St2 = ST.Search_Tree(self.PG.G.nodes)
-        self.t = 0.4
+        self.t = 0
         self.prmc = 0.0
-        self.visited = []
         self.prune_basic = 0
         self.prune_size_based = 0
         self.prune3_antimonoton = 0
@@ -57,10 +56,6 @@ class Algorithm:
         enum_cliques = [x for x in nx.enumerate_all_cliques(tempGraph) if len(node.name) +1 == len(x)]
         #print("Nodes : {0} List :{1}\n".format(node.name,list(enum_cliques)))
         for clique in enum_cliques:
-            #neighbour = max(clique)
-            #print(neighbour)
-            #if neighbour not in node.name:
-                #print('Add {0}\t'.format(clique))
             Node(clique, parent=node)
         dur_ch = time.time() - st_add
         self.add_ch_ph1 += dur_ch
@@ -68,14 +63,25 @@ class Algorithm:
 # This is the main Algorithm Branch and Bound.
 
     def branch_and_bound(self):
+        print(len(self.PG.G.nodes()))
+        print(len(self.PG.G.edges()))
+        print('\n')
+        print("3 : {0}".format(len([x for x in list(nx.enumerate_all_cliques(self.PG.G)) if len(list(x)) == 3])))
+        print("4 : {0}".format(len([x for x in list(nx.enumerate_all_cliques(self.PG.G)) if len(list(x)) == 4])))
+        print("5 : {0}".format(len([x for x in list(nx.enumerate_all_cliques(self.PG.G)) if len(list(x)) == 5])))
+        print("6 : {0}".format(len([x for x in list(nx.enumerate_all_cliques(self.PG.G)) if len(list(x)) == 6])))
+        print("7 : {0}".format(len([x for x in list(nx.enumerate_all_cliques(self.PG.G)) if len(list(x)) == 7])))
+        print("8 : {0}".format(len([x for x in list(nx.enumerate_all_cliques(self.PG.G)) if len(list(x)) == 8])))
         start_ph1 = time.time()
-        self.prmc = 0.2
-        self.t = 0.2
-        self.updatetopk([1, 2, 3])
         root = self.St2.root
-        while root.height != 0:
+        frontHead = self.St2.frontHead
+        while root.height != 0 or frontHead.height != 0:
+            #print('len front {0}'.format(len(frontHead.children)))
+            if frontHead.height == 0 :
+                node = root.children[0]
+            else:
+                node = frontHead.children[0]
             start_gench = time.time()
-            node = root.children[0]
             node.parent = None
             pruned = self.generate_children(node)
             dur_gench = time.time() - start_gench
@@ -88,12 +94,11 @@ class Algorithm:
             self.uptopk_ph1 += dur_uptopk_ph1
             #print(self.gench_ph1)
         dur_ph1 = time.time() - start_ph1
-        print("Hext : {0} \n".format(self.Hext))
+        #print(" Len Hext : {0} \n".format(len(self.Hext)))
         start_ph2 = time.time()
         #print('ph2')
         while len(self.Hext) != 0:
             #print(len(self.Hext))
-            #print(node)
             node = self.Hext[0][1]
             heapq.heappop(self.Hext)
             start_gench = time.time()
@@ -127,6 +132,7 @@ class Algorithm:
         print("Hext : {0} \n".format(self.Hext))
 
     def generate_children(self, node):
+        #print('Bhke gen')
         self.add_children(node)
         node_Graph = self.PG.converts_clique_to_subgraph(node.name)
         #("Node.name {0}".format(node.name))
@@ -138,7 +144,7 @@ class Algorithm:
         d = 1
         #print('Prc : {0} nodes {1}'.format(prc, node.name))
         S = dict()  # S is a dict [ δ(Ci,C): listofnodes]that will be sorted later
-        for child in node.children:  # For Each children of clique.
+        for child in node.children:  # For Each children of clique. (Nodechild1, Nodechild2..)
             child_Graph = self.PG.converts_clique_to_subgraph(child.name)
             PrCi = self.PG.clique_prob_lemma2(child_Graph)
             #print('Prci : {0}, child : {1}'.format(PrCi, child))
@@ -147,6 +153,7 @@ class Algorithm:
             d = d * (1 - di)
             S[di] = child #[KEY = di : VALUE = child]
         self.prmc = prc * d
+       # print('Bhke prmc')
         #print('PRMC : {0}'.format(self.prmc))
         sorted_S = sorted(S.items(), key=operator.itemgetter(0),
                           reverse=True)  # sorting the keys of S in descending order
@@ -155,6 +162,7 @@ class Algorithm:
             return True
         if self.anti_monotonicty_based_prune(sorted_S):
             return True
+        tempRoot = Node('tempRoot',parent= None)
         for index in range(len(sorted_S) - 1, -1, -1):
             # Element_S contains a tuble of S [Probability : Neighbour Clique]
             element_S = sorted_S[index]
@@ -164,10 +172,17 @@ class Algorithm:
             if maxNeighbour not in map(int,node.name):
                 if self.basic_prune(element_S[0]) is False: #!= True:
                     if len(element_S[1].name) <= self.s:
-                        self.St2.add_element(element_S[1])
+                        element_S[1].parent = tempRoot
+                        #self.St2.add_frontHead(element_S[1].name)
                     else:
                         heapq.heappush(self.Hext, [prc * element_S[0], element_S[1]])# pushing [ Prci , Node(Prci.name)]
+        #print(tempRoot.children)
+        #print('Bhke geitones')
+        for child in tempRoot.children[::-1]:
+            #print(child)
+            self.St2.add_frontHead(child)
         return False
+
 
     def updatetopk(self, C):
         if len(C) < self.s:
@@ -257,18 +272,4 @@ class Algorithm:
             return False
 
 
-    def print_results(self):
-        '''
-        for cliques in nx.find_cliques(self.PG.G):
-            if len(cliques) == self.s or len(cliques) > self.s:
-                print(cliques)
-        '''
-        print("")
-        #f = open('results.txt','a')
-        #f.write("Htopk : '{0}'\n".format(self.Htopk))
-        #f.write("Hext : '{0}'\n".format(self.Hext))
-        #f.close
-'''
-    def print_size_of_objects(self):
-        print("Clique Set : '{0}', St : '{1}', Htopk : '{1}', Hext : '{2}', G : '{3}' \n".format(getsizeof(self.setOfAllCliques), getsizeof(self.Htopk), getsizeof(self.Hext), getsizeof(self.PG.G)))
-'''
+#'''

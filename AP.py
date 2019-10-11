@@ -1,8 +1,9 @@
 import argparse
 import Probability_Graph
-import Algorithm
+import Algorithm_dfs
 import File_Loader
 import time
+import datetime
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--random", type=int, nargs=2, help="Random G(v,e)")
@@ -14,48 +15,42 @@ args = parser.parse_args()
 
 if args.random:
     if __name__ == "__main__":
-        f = open("results.txt","a")
-        f.write(str(args.random) + "\n")
-        f.write("Clique size %s " % str(args.size) + "\n")
-        f.write("Top %s " % str(args.topk) + "\n")
-        start = time.time()
-        start1 = time.time()
+        f = open("times.txt","a")
+        f.write("Filename : Random({0},{1}) s : {2}, k : {3} \n".format(args.random[0],args.random[1],args.size,args.topk))
+        f.close()
+        start_prep = time.time()
         Gobject = Probability_Graph.ProbabilityGraph(None, args.random[0], args.random[1])
-        end1 = time.time()
-        start2 = time.time()
-        bnb1 = Algorithm.Algorithm(args.topk, args.size, Gobject)
-        end2 = time.time()
-        start3 = time.time()
+        bnb1 = Algorithm_dfs.Algorithm(args.topk, args.size, Gobject)
+        end_prep = time.time()
+        prep_dur = end_prep - start_prep
+        start_alg = time.time()
         bnb1.branch_and_bound()
-        end3 = time.time()
-        end = time.time()
-        f.write("Creating G  elapsed time %g seconds \n" % (end1 - start1))
-        f.write("BnB initialising elapsed time %g seconds \n" % (end2 - start2))
-        f.write("BnB  elapsed time %g seconds \n" % (end3 - start3))
-        f.write("Elapsed time %g seconds \n" % (end - start))
+        end_alg = time.time()
+        alg_dur = end_alg - start_alg
+        f = open("times.txt", "a")
+        f.write("Preparation : {0} \n".format(str(datetime.timedelta(seconds=prep_dur))))
+        f.write("Algorithm : {0} \n\n".format(str(datetime.timedelta(seconds=alg_dur))))
+        f.write("\n")
         f.close()
 
 if args.load:
+    f = open("times.txt", "a")
+    f.write("Filename : {0}, s : {1}, k : {2} \n".format(args.load[0], args.size, args.topk))
+    f.close()
+    start_prep = time.time()
     filename = 'stats_' + args.load[0]
-    f = open(filename, "a")
-    f.write(str(args.load) + "\n")
-    f.write("Clique size %s " % str(args.size) + "\n")
-    f.write("Top %s " % str(args.topk) + "\n")
-    start4 = time.time()
-    start = time.time()
     Gobject = File_Loader.loading(args.load)
-    end = time.time()
-    f.write("Loading file Elapsed time %g seconds \n" % (end - start))
-    start1 =time.time()
-    bnb1 = Algorithm.Algorithm(args.topk, args.size, Gobject)
-    end1 = time.time()
-    f.write("Algorithm inting Elapsed time %g seconds \n" % (end1 - start1))
-    start2 = time.time()
+    bnb1 = Algorithm_dfs.Algorithm(args.topk, args.size, Gobject)
+    end_prep = time.time()
+    prep_dur = end_prep - start_prep
+    start_alg = time.time()
     bnb1.branch_and_bound()
-    end2 = time.time()
-    f.write("Algorithm   Elapsed time %g seconds \n" % (end2 - start2))
-    end4 = time.time()
-    f.write("Elapsed time %g seconds \n" % (end4 - start4))
+    end_alg = time.time()
+    alg_dur =  end_alg - start_alg
+    f = open("times.txt", "a")
+    f.write("Preparation : {0} \n".format(str(datetime.timedelta(seconds=prep_dur))))
+    f.write("Algorithm : {0} \n".format(str(datetime.timedelta(seconds=alg_dur))))
+    f.write("\n")
     f.close()
 
 if args.delete == 'True':
